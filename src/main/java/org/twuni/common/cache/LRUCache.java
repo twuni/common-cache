@@ -1,5 +1,10 @@
 package org.twuni.common.cache;
 
+/**
+ * This is an implementation of a Least Recently Used cache. As new items are added to the
+ * cache, the least recently accessed cache entries are given priority when ejecting to make
+ * room.
+ */
 public class LRUCache<K, V> extends Cache<K, V> {
 
 	protected class Node {
