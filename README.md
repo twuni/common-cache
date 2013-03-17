@@ -13,15 +13,18 @@ directory, and run `mvn install`.
 
 To use this library in your Maven application or library, add the following dependency:
 
+```xml
     <dependency>
       <groupId>org.twuni</groupId>
       <artifactId>common-cache</artifactId>
       <version>0.1.0-SNAPSHOT</version>
     </dependency>
+```
 
 Pre-built versions of this and other Twuni Commons libraries are available in the Twuni
 Maven Repository. To use it, add the following block to your application's **pom.xml**:
 
+```xml
     <repositories>
       <repository>
         <releases>
@@ -52,6 +55,7 @@ Maven Repository. To use it, add the following block to your application's **pom
         <layout>default</layout>
       </repository>
     </repositories>
+```
 
 If you do not use the Maven build system, you can download them directly from
 [https://maven.twuni.org/browse/org.twuni/common-cache][2].
