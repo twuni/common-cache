@@ -42,4 +42,32 @@ public class LRUCacheTest {
 		cache.put( "key", "value" );
 	}
 
+	@Test
+	public void remove_shouldDoNothingWhenCacheIsEmpty() {
+		LRUCache<String, String> cache = new LRUCache<String, String>( 100 );
+		Assert.assertTrue( cache.isEmpty() );
+		cache.remove( "test" );
+		Assert.assertTrue( cache.isEmpty() );
+	}
+
+	@Test
+	public void remove_shouldDoNothingWhenCacheDoesNotContainGivenKey() {
+		LRUCache<String, String> cache = new LRUCache<String, String>( 100 );
+		Assert.assertEquals( 0, cache.size() );
+		cache.put( "dog", "Boxer" );
+		Assert.assertEquals( 1, cache.size() );
+		cache.remove( "cat" );
+		Assert.assertEquals( 1, cache.size() );
+	}
+
+	@Test
+	public void remove_shouldAdjustSizeWhenCacheContainsGivenKey() {
+		LRUCache<String, String> cache = new LRUCache<String, String>( 100 );
+		Assert.assertEquals( 0, cache.size() );
+		cache.put( "dog", "Boxer" );
+		Assert.assertEquals( 1, cache.size() );
+		cache.remove( "dog" );
+		Assert.assertEquals( 0, cache.size() );
+	}
+
 }

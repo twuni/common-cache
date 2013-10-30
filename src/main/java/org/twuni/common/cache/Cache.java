@@ -9,7 +9,6 @@ public abstract class Cache<K, V> {
 
 	private final Map<K, V> implementation = new HashMap<K, V>();
 	protected final int capacity;
-
 	protected int size;
 
 	/**
@@ -66,6 +65,24 @@ public abstract class Cache<K, V> {
 		// Do nothing.
 	}
 
+	/**
+	 * This method is called whenever an item is removed from this cache. By default, does nothing.
+	 * 
+	 * @param key
+	 * @param value
+	 */
+	protected void onRemove( K key, V value ) {
+		// Do nothing.
+	}
+
+	public final void remove( K key ) {
+		V value = implementation.get( key );
+		int sizeOfOldEntry = sizeOf( key, value );
+		implementation.remove( key );
+		size -= sizeOfOldEntry;
+		onRemove( key, value );
+	}
+
 	public final void put( K key, V value ) {
 
 		int sizeOfNewEntry = sizeOf( key, value );
@@ -102,7 +119,7 @@ public abstract class Cache<K, V> {
 	 * @return the size of the cache item. Returns 1 by default.
 	 */
 	protected int sizeOf( K key, V value ) {
-		return 1;
+		return value == null ? 0 : 1;
 	}
 
 }

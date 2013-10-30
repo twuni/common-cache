@@ -33,6 +33,9 @@ public class LRUCache<K, V> extends Cache<K, V> {
 
 	@Override
 	protected K eject() {
+		if( leastRecentlyUsed == null ) {
+			return null;
+		}
 		K ejected = leastRecentlyUsed.key;
 		leastRecentlyUsed = leastRecentlyUsed.next;
 		return ejected;
@@ -46,6 +49,21 @@ public class LRUCache<K, V> extends Cache<K, V> {
 	@Override
 	protected void onPut( K key, V value ) {
 		onUsed( key, value );
+	}
+
+	@Override
+	protected void onRemove( K key, V value ) {
+		Node previous = null;
+		for( Node current = leastRecentlyUsed; current != null; current = current.next ) {
+			if( current.key.equals( key ) ) {
+				if( previous == null ) {
+					leastRecentlyUsed = current;
+					return;
+				}
+				previous.next = current.next;
+				return;
+			}
+		}
 	}
 
 	protected void onUsed( K key, V value ) {
