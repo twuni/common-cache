@@ -21,6 +21,9 @@ public class LRACache<K, V> extends Cache<K, V> {
 
 	@Override
 	protected K eject() {
+		if( oldest == null ) {
+			return null;
+		}
 		K ejected = oldest.key;
 		oldest = oldest.next;
 		return ejected;
