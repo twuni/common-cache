@@ -48,4 +48,19 @@ public class LRACache<K, V> extends Cache<K, V> {
 
 	}
 
+	@Override
+	protected void onRemove( K key, V value ) {
+		Node previous = null;
+		for( Node current = newest; current != null; current = current.next ) {
+			if( current.key.equals( key ) ) {
+				if( previous == null ) {
+					newest = current;
+					return;
+				}
+				previous.next = current.next;
+				return;
+			}
+		}
+	}
+
 }
