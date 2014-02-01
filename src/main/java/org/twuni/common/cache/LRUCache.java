@@ -1,9 +1,11 @@
 package org.twuni.common.cache;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
- * This is an implementation of a Least Recently Used cache. As new items are added to the
- * cache, the least recently accessed cache entries are given priority when ejecting to make
- * room.
+ * This is an implementation of a Least Recently Used cache. As new items are added to the cache,
+ * the least recently accessed cache entries are given priority when ejecting to make room.
  */
 public class LRUCache<K, V> extends Cache<K, V> {
 
@@ -18,9 +20,38 @@ public class LRUCache<K, V> extends Cache<K, V> {
 			this.value = value;
 		}
 
+		public boolean isLast() {
+			return next == null;
+		}
+
+		public Node last() {
+			Node last = this;
+			while( !last.isLast() ) {
+				last = last.next;
+			}
+			return last;
+		}
+
+		public List<K> keys() {
+			List<K> order = new ArrayList<K>();
+			for( Node current = this; current != null; current = current.next ) {
+				order.add( current.key );
+			}
+			return order;
+		}
+
+		public boolean matches( K key ) {
+			return key != null ? key.equals( this.key ) : this.key == null;
+		}
+
 		@Override
 		public String toString() {
-			return key.toString();
+			StringBuilder s = new StringBuilder();
+			s.append( key );
+			if( next != null ) {
+				s.append( '→' ).append( next );
+			}
+			return s.toString();
 		}
 
 	}
@@ -77,37 +108,43 @@ public class LRUCache<K, V> extends Cache<K, V> {
 
 		for( Node current = leastRecentlyUsed; current != null; current = current.next ) {
 
-			if( !current.key.equals( key ) ) {
-				previous = current;
-				if( current.next == null ) {
-					current.next = new Node( key, value );
+			if( current.matches( key ) ) {
+
+				if( current.isLast() ) {
+					break;
 				}
-				continue;
-			}
 
-			if( current.next == null ) {
-				continue;
-			}
+				if( previous == null ) {
+					leastRecentlyUsed = current.next;
+					current.last().next = current;
+					current.next = null;
+					break;
+				}
 
-			if( previous == null ) {
-				leastRecentlyUsed = current.next;
-				current.next = leastRecentlyUsed.next;
-				leastRecentlyUsed.next = current;
-			} else {
 				previous.next = current.next;
-				current.next = previous.next.next;
-				previous.next.next = current;
-			}
-
-			current = current.next;
-			previous = current;
-
-			if( current == null ) {
+				current.last().next = current;
+				current.next = null;
 				break;
 			}
 
+			if( current.isLast() ) {
+				current.next = new Node( key, value );
+				break;
+			}
+
+			previous = current;
+
 		}
 
+	}
+
+	public List<K> inspectOrdering() {
+		return leastRecentlyUsed != null ? leastRecentlyUsed.keys() : null;
+	}
+
+	@Override
+	public String toString() {
+		return leastRecentlyUsed != null ? leastRecentlyUsed.toString() : "(empty)";
 	}
 
 }

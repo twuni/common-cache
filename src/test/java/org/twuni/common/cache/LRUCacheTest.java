@@ -4,7 +4,50 @@ import org.junit.Assert;
 import org.junit.Test;
 import org.twuni.common.cache.exception.SizeException;
 
-public class LRUCacheTest {
+public class LRUCacheTest extends Assert {
+
+	private static <K, V> void assertCacheOrdering( LRUCache<K, V> cache, K... expected ) {
+		assertArrayEquals( expected, cache.inspectOrdering().toArray() );
+	}
+
+	private static <K, V> void initialState( LRUCache<K, V> cache, K... keys ) {
+		for( K key : keys ) {
+			cache.get( key );
+		}
+	}
+
+	@Test
+	public void usingMidPriorityKey_shouldReduceItToLowestPriority() {
+
+		LRUCache<String, String> cache = new LRUCache<String, String>( 5 );
+
+		initialState( cache, "A", "B", "C" );
+		cache.get( "B" );
+		assertCacheOrdering( cache, "A", "C", "B" );
+
+	}
+
+	@Test
+	public void usingHighestPriorityKey_shouldReduceItToLowestPriority() {
+
+		LRUCache<String, String> cache = new LRUCache<String, String>( 5 );
+
+		initialState( cache, "A", "B", "C" );
+		cache.get( "A" );
+		assertCacheOrdering( cache, "B", "C", "A" );
+
+	}
+
+	@Test
+	public void usingLowestPriorityKey_shouldHaveNoEffect() {
+
+		LRUCache<String, String> cache = new LRUCache<String, String>( 5 );
+
+		initialState( cache, "A", "B", "C" );
+		cache.get( "C" );
+		assertCacheOrdering( cache, "A", "B", "C" );
+
+	}
 
 	@Test
 	public void testCacheEjectsLeastRecentlyUsedValueWhenCapacityReached() {
