@@ -17,36 +17,56 @@ public class LRUCacheTest extends Assert {
 	}
 
 	@Test
-	public void usingMidPriorityKey_shouldReduceItToLowestPriority() {
-
-		LRUCache<String, String> cache = new LRUCache<String, String>( 5 );
-
-		initialState( cache, "A", "B", "C" );
-		cache.get( "B" );
-		assertCacheOrdering( cache, "A", "C", "B" );
-
+	public void clear_shouldAdjustSizeToZero() {
+		LRUCache<String, String> cache = prepareCacheForTest_clear( 5 );
+		Assert.assertEquals( 0, cache.size() );
 	}
 
 	@Test
-	public void usingHighestPriorityKey_shouldReduceItToLowestPriority() {
-
-		LRUCache<String, String> cache = new LRUCache<String, String>( 5 );
-
-		initialState( cache, "A", "B", "C" );
-		cache.get( "A" );
-		assertCacheOrdering( cache, "B", "C", "A" );
-
+	public void clear_shouldNotAffectCapacity() {
+		LRUCache<String, String> cache = prepareCacheForTest_clear( 5 );
+		Assert.assertEquals( 5, cache.getCapacity() );
 	}
 
 	@Test
-	public void usingLowestPriorityKey_shouldHaveNoEffect() {
+	public void clear_shouldRemoveExistingItems() {
+		LRUCache<String, String> cache = prepareCacheForTest_clear( 5 );
+		Assert.assertNull( cache.get( "test" ) );
+	}
 
-		LRUCache<String, String> cache = new LRUCache<String, String>( 5 );
+	private LRUCache<String, String> prepareCacheForTest_clear( int capacity ) {
+		LRUCache<String, String> cache = new LRUCache<String, String>( capacity );
+		cache.put( "test", "12345" );
+		cache.clear();
+		return cache;
+	}
 
-		initialState( cache, "A", "B", "C" );
-		cache.get( "C" );
-		assertCacheOrdering( cache, "A", "B", "C" );
+	@Test
+	public void remove_shouldAdjustSizeWhenCacheContainsGivenKey() {
+		LRUCache<String, String> cache = new LRUCache<String, String>( 100 );
+		Assert.assertEquals( 0, cache.size() );
+		cache.put( "dog", "Boxer" );
+		Assert.assertEquals( 1, cache.size() );
+		cache.remove( "dog" );
+		Assert.assertEquals( 0, cache.size() );
+	}
 
+	@Test
+	public void remove_shouldDoNothingWhenCacheDoesNotContainGivenKey() {
+		LRUCache<String, String> cache = new LRUCache<String, String>( 100 );
+		Assert.assertEquals( 0, cache.size() );
+		cache.put( "dog", "Boxer" );
+		Assert.assertEquals( 1, cache.size() );
+		cache.remove( "cat" );
+		Assert.assertEquals( 1, cache.size() );
+	}
+
+	@Test
+	public void remove_shouldDoNothingWhenCacheIsEmpty() {
+		LRUCache<String, String> cache = new LRUCache<String, String>( 100 );
+		Assert.assertTrue( cache.isEmpty() );
+		cache.remove( "test" );
+		Assert.assertTrue( cache.isEmpty() );
 	}
 
 	@Test
@@ -86,31 +106,36 @@ public class LRUCacheTest extends Assert {
 	}
 
 	@Test
-	public void remove_shouldDoNothingWhenCacheIsEmpty() {
-		LRUCache<String, String> cache = new LRUCache<String, String>( 100 );
-		Assert.assertTrue( cache.isEmpty() );
-		cache.remove( "test" );
-		Assert.assertTrue( cache.isEmpty() );
+	public void usingHighestPriorityKey_shouldReduceItToLowestPriority() {
+
+		LRUCache<String, String> cache = new LRUCache<String, String>( 5 );
+
+		initialState( cache, "A", "B", "C" );
+		cache.get( "A" );
+		assertCacheOrdering( cache, "B", "C", "A" );
+
 	}
 
 	@Test
-	public void remove_shouldDoNothingWhenCacheDoesNotContainGivenKey() {
-		LRUCache<String, String> cache = new LRUCache<String, String>( 100 );
-		Assert.assertEquals( 0, cache.size() );
-		cache.put( "dog", "Boxer" );
-		Assert.assertEquals( 1, cache.size() );
-		cache.remove( "cat" );
-		Assert.assertEquals( 1, cache.size() );
+	public void usingLowestPriorityKey_shouldHaveNoEffect() {
+
+		LRUCache<String, String> cache = new LRUCache<String, String>( 5 );
+
+		initialState( cache, "A", "B", "C" );
+		cache.get( "C" );
+		assertCacheOrdering( cache, "A", "B", "C" );
+
 	}
 
 	@Test
-	public void remove_shouldAdjustSizeWhenCacheContainsGivenKey() {
-		LRUCache<String, String> cache = new LRUCache<String, String>( 100 );
-		Assert.assertEquals( 0, cache.size() );
-		cache.put( "dog", "Boxer" );
-		Assert.assertEquals( 1, cache.size() );
-		cache.remove( "dog" );
-		Assert.assertEquals( 0, cache.size() );
+	public void usingMidPriorityKey_shouldReduceItToLowestPriority() {
+
+		LRUCache<String, String> cache = new LRUCache<String, String>( 5 );
+
+		initialState( cache, "A", "B", "C" );
+		cache.get( "B" );
+		assertCacheOrdering( cache, "A", "C", "B" );
+
 	}
 
 }
