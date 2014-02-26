@@ -20,6 +20,15 @@ public class LRUCache<K, V> extends Cache<K, V> {
 			this.value = value;
 		}
 
+		public void clear() {
+			key = null;
+			value = null;
+			if( next != null ) {
+				next.clear();
+				next = null;
+			}
+		}
+
 		public boolean isLast() {
 			return next == null;
 		}
@@ -60,6 +69,15 @@ public class LRUCache<K, V> extends Cache<K, V> {
 
 	public LRUCache( int capacity ) {
 		super( capacity );
+	}
+
+	@Override
+	public void clear() {
+		super.clear();
+		if( leastRecentlyUsed != null ) {
+			leastRecentlyUsed.clear();
+			leastRecentlyUsed = null;
+		}
 	}
 
 	@Override

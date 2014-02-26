@@ -18,6 +18,11 @@ public abstract class Cache<K, V> {
 	public Cache( int capacity ) {
 		this.capacity = capacity;
 	}
+	
+	public void clear() {
+		implementation.clear();
+		size = 0;
+	}
 
 	/**
 	 * This method is called when an item needs to be removed from the cache.
