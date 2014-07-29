@@ -71,6 +71,10 @@ public class LRUCache<K, V> extends Cache<K, V> {
 		super( capacity );
 	}
 
+	public LRUCache( int capacity, SizeCalculator<K, V> calculator ) {
+		super( capacity, calculator );
+	}
+
 	@Override
 	public void clear() {
 		super.clear();

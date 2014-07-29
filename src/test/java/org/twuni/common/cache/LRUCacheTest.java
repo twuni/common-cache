@@ -17,6 +17,41 @@ public class LRUCacheTest extends Assert {
 	}
 
 	@Test
+	public void put_shouldAdjustSizeCorrectly_whenEjectingSameKeyToMakeRoomForItsNewValue() {
+
+		LRUCache<String, String> cache = new LRUCache<String, String>( 5, new StringLengthSizeCalculator<String>() );
+
+		cache.put( "foo", "333" );
+		assertEquals( 3, cache.size() );
+
+		cache.put( "bar", "22" );
+		assertEquals( 5, cache.size() );
+
+		cache.put( "foo", "22" );
+		assertEquals( 4, cache.size() );
+
+	}
+
+	@Test
+	public void put_shouldNotIncrementSize_whenGivenSameKey() {
+
+		LRUCache<String, String> cache = new LRUCache<String, String>( 5, new StringLengthSizeCalculator<String>() );
+
+		cache.put( "b", "22" );
+		assertEquals( 2, cache.size() );
+
+		cache.put( "b", "22" );
+		assertEquals( 2, cache.size() );
+
+		cache.put( "c", "333" );
+		assertEquals( 5, cache.size() );
+
+		cache.put( "d", "4444" );
+		assertEquals( 4, cache.size() );
+
+	}
+
+	@Test
 	public void clear_shouldAdjustSizeToZero() {
 		LRUCache<String, String> cache = prepareCacheForTest_clear( 5 );
 		Assert.assertEquals( 0, cache.size() );

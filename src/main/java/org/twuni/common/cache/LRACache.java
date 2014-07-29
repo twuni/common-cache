@@ -19,6 +19,10 @@ public class LRACache<K, V> extends Cache<K, V> {
 		super( capacity );
 	}
 
+	public LRACache( int capacity, SizeCalculator<K, V> calculator ) {
+		super( capacity, calculator );
+	}
+
 	@Override
 	protected K eject() {
 		if( oldest == null ) {

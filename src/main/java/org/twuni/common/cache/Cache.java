@@ -8,17 +8,31 @@ import org.twuni.common.cache.exception.SizeException;
 public abstract class Cache<K, V> {
 
 	private final Map<K, V> implementation = new HashMap<K, V>();
+	private final SizeCalculator<K, V> calculator;
 	protected final int capacity;
 	protected int size;
 
 	/**
+	 * Constructs a new cache using a {@link SimpleSizeCalculator}.
+	 * 
 	 * @param capacity
 	 *            the maximum size of this cache.
 	 */
 	public Cache( int capacity ) {
-		this.capacity = capacity;
+		this( capacity, new SimpleSizeCalculator<K, V>() );
 	}
-	
+
+	/**
+	 * @param capacity
+	 *            the maximum size of this cache.
+	 * @param calculator
+	 *            the algorithm to use for determining the size of individual items in the cache.
+	 */
+	public Cache( int capacity, SizeCalculator<K, V> calculator ) {
+		this.capacity = capacity;
+		this.calculator = calculator;
+	}
+
 	public void clear() {
 		implementation.clear();
 		size = 0;
@@ -90,20 +104,24 @@ public abstract class Cache<K, V> {
 
 	public final void put( K key, V value ) {
 
-		int sizeOfNewEntry = sizeOf( key, value );
+		final int sizeOfNewEntry = sizeOf( key, value );
+		final int sizeOfOldEntry = sizeOf( key, implementation.get( key ) );
+		final int growth = sizeOfNewEntry - sizeOfOldEntry;
 
-		if( sizeOfNewEntry > capacity ) {
-			throw new SizeException( sizeOfNewEntry, capacity );
+		if( capacity < growth ) {
+			throw new SizeException( growth, capacity );
 		}
 
-		while( size + sizeOfNewEntry > capacity ) {
-			K ejected = eject();
-			size -= sizeOf( ejected, implementation.get( ejected ) );
-			implementation.remove( ejected );
+		while( capacity < size + growth ) {
+			K ejectedKey = eject();
+			if( !key.equals( ejectedKey ) ) {
+				size -= sizeOf( ejectedKey, implementation.get( ejectedKey ) );
+			}
+			implementation.remove( ejectedKey );
 		}
 
 		implementation.put( key, value );
-		size += sizeOfNewEntry;
+		size += growth;
 
 		onPut( key, value );
 
@@ -114,17 +132,16 @@ public abstract class Cache<K, V> {
 	}
 
 	/**
-	 * Determines the size of the item for the given key and value. By default, all items have a
-	 * size of 1.
+	 * Determines the size of the item for the given key and value.
 	 * 
 	 * @param key
 	 *            of the cache item.
 	 * @param value
 	 *            of the cache item.
-	 * @return the size of the cache item. Returns 1 by default.
+	 * @return the size of the cache item.
 	 */
 	protected int sizeOf( K key, V value ) {
-		return value == null ? 0 : 1;
+		return calculator.sizeOf( key, value );
 	}
 
 }
