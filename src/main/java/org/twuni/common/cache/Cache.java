@@ -33,6 +33,9 @@ public abstract class Cache<K, V> {
 		this.calculator = calculator;
 	}
 
+	/**
+	 * Removes all items from this cache.
+	 */
 	public void clear() {
 		implementation.clear();
 		size = 0;
@@ -45,20 +48,43 @@ public abstract class Cache<K, V> {
 	 */
 	protected abstract K eject();
 
+	/**
+	 * Gets the item in this cache corresponding to the given {@code key}.
+	 *
+	 * @param key
+	 *            the key whose value within this cache should be returned.
+	 *
+	 * @return the value corresponding to the given {@code key}.
+	 */
 	public final V get( K key ) {
 		V value = implementation.get( key );
 		onGet( key, value );
 		return value;
 	}
 
+	/**
+	 * Returns the maximum capacity for items that can be held within this cache.
+	 *
+	 * @return the maximum capacity for items that can be held within this cache.
+	 */
 	public int getCapacity() {
 		return capacity;
 	}
 
+	/**
+	 * Returns {@code true} if this cache is currently empty.
+	 *
+	 * @return {@code true} if this cache is currently empty.
+	 */
 	public boolean isEmpty() {
 		return size <= 0;
 	}
 
+	/**
+	 * Returns {@code true} if this cache is currently full.
+	 *
+	 * @return {@code true} if this cache is currently full.
+	 */
 	public boolean isFull() {
 		return size >= capacity;
 	}
@@ -68,7 +94,9 @@ public abstract class Cache<K, V> {
 	 * nothing.
 	 * 
 	 * @param key
+	 *            the key with which the given {@code value} is associated.
 	 * @param value
+	 *            the item within this cache corresponding to the given {@code key}.
 	 */
 	protected void onGet( K key, V value ) {
 		// Do nothing.
@@ -78,7 +106,9 @@ public abstract class Cache<K, V> {
 	 * This method is called whenever an item is added to this cache. By default, does nothing.
 	 * 
 	 * @param key
+	 *            the key with which the given {@code value} is being associated.
 	 * @param value
+	 *            the item being put into this cache corresponding to the given {@code key}.
 	 */
 	protected void onPut( K key, V value ) {
 		// Do nothing.
@@ -88,12 +118,20 @@ public abstract class Cache<K, V> {
 	 * This method is called whenever an item is removed from this cache. By default, does nothing.
 	 * 
 	 * @param key
+	 *            the key with which the given {@code value} is associated.
 	 * @param value
+	 *            the item within this cache corresponding to the given {@code key}.
 	 */
 	protected void onRemove( K key, V value ) {
 		// Do nothing.
 	}
 
+	/**
+	 * Removes the item within this cache corresponding to the given {@code key}.
+	 *
+	 * @param key
+	 *            the key whose corresponding value should be removed from this cache.
+	 */
 	public final void remove( K key ) {
 		V value = implementation.get( key );
 		int sizeOfOldEntry = sizeOf( key, value );
@@ -127,6 +165,11 @@ public abstract class Cache<K, V> {
 
 	}
 
+	/**
+	 * Returns the number of items currently contained within this cache.
+	 *
+	 * @return the number of items currently contained within this cache.
+	 */
 	public int size() {
 		return size;
 	}
