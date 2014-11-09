@@ -10,7 +10,7 @@
 	</parent>
 
 	<artifactId>common-cache</artifactId>
-	<version>0.2.1-SNAPSHOT</version>
+	<version>0.2.1</version>
 
 	<name>Twuni Commons - Cache</name>
 	<description>Fundamental data structures and algorithms used for caching.</description>
